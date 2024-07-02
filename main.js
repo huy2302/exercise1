@@ -89,6 +89,7 @@ $(document).ready(function () {
     function populateTableTotalDevices(data) {
         // render list devices
         let tbody = $('.overview-table tbody');
+        tbody.empty();
 
         $.each(data, function (index, device) {
             const row = `<tr>
@@ -109,19 +110,18 @@ $(document).ready(function () {
         tbody.append(row);
     }
 
-    // Function to calculate total power consumption
+    // Function calculate total devices
     function calculateTotal(data) {
         let total = 0;
         $.each(data, function (index, device) {
             total += device.PowerConsumption;
         });
-        return total.toFixed(1);
+        return total;
     }
 
-    // Populate the table with sample data
     populateTableTotalDevices(totalDevices);
 
-    // Function to populate the table list devices
+    // Function render list devices
     function populateTableDevices(data, currentPage) {
         // render list devices
         let tbody = $('.devices-table tbody');
@@ -139,7 +139,6 @@ $(document).ready(function () {
             tbody.append(row);
         });
 
-
         // render total row
         const row = `<tr class="overview-total">
                             <td colspan="3">Total</td>
@@ -153,79 +152,81 @@ $(document).ready(function () {
 
     // paginate
 
-    const itemsPerPage = 7; // number of page
-    let currentPage = 1;    // current page
+    function createPaginate(data) {
+        const itemsPerPage = 7; // number of page
+        let currentPage = 1;    // current page
 
-    // display table
-    function displayData(page) {
-        const startIndex = (page - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const paginatedData = devices.slice(startIndex, endIndex);
+        // display table
+        function displayData(page) {
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedData = data.slice(startIndex, endIndex);
 
-        const tbody = $('#device-table-body');
-        tbody.empty(); // clear data 
+            const tbody = $('#device-table-body');
+            tbody.empty(); // clear data 
 
-        $.each(paginatedData, function (index, device) {
-            const row = `<tr>
+            $.each(paginatedData, function (index, device) {
+                const row = `<tr>
                             <td>${device.DeviceID}</td>
                             <td>${device.Name}</td>
                             <td>${device.Action}</td>
                             <td>${device.Date}</td>
                         </tr>`;
-            tbody.append(row);
-        });
+                tbody.append(row);
+            });
+        }
+
+        // Function create buttons paginate
+        function createPaginationButtons(currentPage, totalPages) {
+            const paginationButtons = $('#pagination-buttons');
+            paginationButtons.empty(); // clear paginate buttons
+
+            // prev button
+            if (currentPage > 1) {
+                paginationButtons.append(`<button class="pagination-btn" data-page="${currentPage - 1}"><</button>`);
+            }
+
+            // number buttons
+            for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+                paginationButtons.append(`<button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`);
+            }
+
+            // next button
+            if (currentPage < totalPages) {
+                paginationButtons.append(`<button class="pagination-btn" data-page="${currentPage + 1}">></button>`);
+            }
+
+            // handle event click 
+            $('.pagination-btn').click(function () {
+                currentPage = parseInt($(this).attr('data-page'));
+                displayData(currentPage, data);
+                createPaginationButtons(currentPage, totalPages);
+                console.log(currentPage);
+                populateTableDevices(data, currentPage);
+            });
+        }
+
+        // Calculate and display paginate buttons
+        const totalPages = Math.ceil(data.length / itemsPerPage);
+        displayData(currentPage);
+        createPaginationButtons(currentPage, totalPages);
     }
 
-    // Function create buttons paginate
-    function createPaginationButtons(currentPage, totalPages) {
-        const paginationButtons = $('#pagination-buttons');
-        paginationButtons.empty(); // clear paginate buttons
-
-        // prev button
-        if (currentPage > 1) {
-            paginationButtons.append(`<button class="pagination-btn" data-page="${currentPage - 1}"><</button>`);
-        }
-
-        // number buttons
-        for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
-            paginationButtons.append(`<button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`);
-        }
-
-        // next button
-        if (currentPage < totalPages) {
-            paginationButtons.append(`<button class="pagination-btn" data-page="${currentPage + 1}">></button>`);
-        }
-
-        // handle event click 
-        $('.pagination-btn').click(function () {
-            currentPage = parseInt($(this).attr('data-page'));
-            displayData(currentPage);
-            createPaginationButtons(currentPage, totalPages);
-            console.log(currentPage);
-            populateTableDevices(devices, currentPage);
-        });
-    }
-
-    // Calculate and display paginate buttons
-    const totalPages = Math.ceil(devices.length / itemsPerPage);
-    displayData(currentPage);
-    createPaginationButtons(currentPage, totalPages);
+    createPaginate(devices);
 
 
     // chart
-    
-
     function createChart() {
         let xValues = totalDevices.map(item => item.Device);
         let yValues = totalDevices.map(item => item.PowerConsumption);
-        
+
         let barColors = [
             "#b91d47",
             "#00aba9",
             "#2b5797",
             "#e8c3b9"
         ];
-        
+
         var maintainAspectRatio = window.innerWidth > 414 ? true : false;
 
         var ctx = $("#myChart");
@@ -252,38 +253,93 @@ $(document).ready(function () {
 
         return myChart;
     }
-
     var chart = createChart();
 
     $(window).resize(function () {
-        chart.destroy();  
-        chart = createChart();  
+        chart.destroy();
+        chart = createChart();
     });
 
     // add device
-    $('.add-device').on('submit', function(event) {
-        event.preventDefault();  
+    $('.add-device').on('submit', function (event) {
+        event.preventDefault();
 
-        
+
         const name = $('input[name="name"]').val().trim();
         const ip = $('input[name="ip"]').val().trim();
+        const pwc = $('input[name="pwc"]').val().trim();
 
         if (name === "") {
-            console.log("Name is empty");
+            alert("Name is empty");
             $('input[name="name"]').focus()
             return;
         } else if (ip === "") {
-            console.log("IP is empty");
+            alert("IP is empty");
             $('input[name="ip"]').focus()
             return;
-        } 
+        } else if (pwc === "") {
+            alert("Power Consumption is empty");
+            $('input[name="pwc"]').focus()
+            return;
+        }
 
-        console.log('Device Name:', name);
-        console.log('Device IP:', ip);
+        // get current date
+        let currentDate = new Date();
+
+        let formattedDate = currentDate.getFullYear() + '-' +
+            ('0' + (currentDate.getMonth() + 1)).slice(-2) + '-' +
+            ('0' + currentDate.getDate()).slice(-2);
+
+        totalDevices.push({
+            Device: name,
+            MACAddress: "",
+            IP: ip,
+            CreatedDate: formattedDate,
+            PowerConsumption: pwc
+        })
+
+        chart.destroy();
+        chart = createChart();
+
+        populateTableTotalDevices(totalDevices);
+        // alert("Added succesfully");
 
         $('input[name="name"]').val('');
         $('input[name="ip"]').val('');
 
+    });
+
+    // search devices
+    $('.search-box').on('submit', function (event) {
+        event.preventDefault();
+
+        const name = $('input[name="search"]').val().trim();
+
+        devicesSearch = [];
+        count = 0;
+        devices.forEach((item) => {
+            if (item.Name.toLowerCase().includes(name.toLowerCase())) {
+                devicesSearch.push(item);
+                count++;
+            }
+        });
+
+        // if records = 0 => return
+        if (count === 0) {
+            alert("No records found");
+            populateTableDevices(devices, 1);
+
+            createPaginate(devices);
+            return;
+        }
+
+        // render list 
+        populateTableDevices(devicesSearch, 1);
+
+        createPaginate(devicesSearch);
+
+        // reset count
+        count = 0;
     });
 })
 

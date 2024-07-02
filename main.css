@@ -41,6 +41,7 @@ body {
     padding: 1.5em 2em;
     margin: 0 auto;
     margin-bottom: 2em;
+    box-shadow: 1px 1px 1px 0px rgb(0 0 0 / 19%);
 }
 
 .login-box .submit-box {
@@ -84,7 +85,7 @@ body {
     min-width: 245px;
     min-height: 100vh;
     box-shadow: 2px 2px 9px 0px rgb(0 0 0 / 19%);
-    z-index: 1;
+    z-index: 2;
     transition: 0.4s;
 }
 
@@ -140,7 +141,15 @@ header {
 header .menu {
     display: none;
 }
-
+header .menu .close-btn {
+    width: 100vw;
+    height: 100vh;
+    background: #00000070;
+    z-index: 1;
+    transition: 0.3s;
+    /* padding-left: 245px; */
+    /* opacity: 0; */
+}
 header .menu button {
     width: 100px;
     height: 60px;
@@ -188,7 +197,15 @@ header .profile p {
 }
 
 .chart-box {
-    
+    position: relative; 
+    width: 100%; 
+    height: 400px; 
+}
+
+.chart-box canvas {
+    width: 100% !important;
+    height: auto !important; 
+    display: block; 
 }
 
 .add-device {
@@ -318,6 +335,7 @@ td {
 
     .chart-container {
         display: block;
+        margin-top: 0;
     }
 
     #myChart {
@@ -326,6 +344,11 @@ td {
 
     .chart-child {
         width: 100%;
+        
+    }
+    .add-device {
+        margin: 0 auto;
+        margin-top: 30px;
     }
 }
 
@@ -359,7 +382,8 @@ td {
 
     .close-btn {
         position: absolute;
-        left: 245px;
+        /* left: 245px; */
+        opacity: 1;
     }
 
     .right-content {

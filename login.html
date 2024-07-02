@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="./main.css">
+
+    <script src="jquery-3.7.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 </head>
 
 <body>
@@ -15,8 +19,8 @@
             <h2>SOIOT SYSTEM</h2>
 
             <div class="input-box">
-                <input type="text" placeholder="User name">
-                <input type="password" placeholder="Password">
+                <input type="text" name="uname" placeholder="User name">
+                <input type="password" name="password" placeholder="Password">
             </div>
 
             <div class="submit-box">
@@ -25,6 +29,31 @@
             </div>
         </form>
     </div>
+    <script>
+        $('.login-box').on('submit', function (event) {
+            event.preventDefault();
+
+            const uname = $('input[name="uname"]').val().trim();
+            const password = $('input[name="password"]').val().trim();
+
+            if (uname === "") {
+                alert("User name is empty");
+                $('input[name="uname"]').focus();
+                return;
+            } else if (password === "") {
+                alert("Password is empty");
+                $('input[name="password"]').focus();
+                return;
+            }
+
+            if (uname === "john") {
+                password === "1234" ? window.location.href = "./index.html" : alert("Wrong password.");
+                $('input[name="password"]').val('');
+            } else {
+                alert('User name is not exist.');
+            }
+        });
+    </script>
 </body>
 
 </html>

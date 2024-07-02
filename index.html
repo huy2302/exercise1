@@ -94,9 +94,9 @@
                             </svg>
                         </button>
                         <button class="close-btn" style="display: none;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                                 <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                            </svg>
+                            </svg> -->
                         </button>
                     </div>
                     <div class="profile">
@@ -130,8 +130,9 @@
                                 <canvas id="myChart" style="width:100%;max-width:100%;"></canvas>
                             </div>
                             <form class="chart-child add-device" action="">
-                                <input type="text" name="name" placeholder="name">
-                                <input type="text" name="ip" placeholder="ip">
+                                <input type="text" name="name" placeholder="Device Name">
+                                <input type="text" name="ip" placeholder="IP">
+                                <input type="number" name="pwc" placeholder="Power Consumption (Km/H)">
                                 <button class="add-btn" type="submit">Add device</button>
                             </form>
                         </div>
@@ -139,13 +140,13 @@
 
                     <!-- Logs tab -->
                     <div class="list-device" style="display: none;">
-                        <div class="search-box">
+                        <form class="search-box">
                             <h3>Action Logs</h3>
                             <div class="search">
-                                <input class="search-input" type="text" placeholder="name">
-                                <button class="search-btn">Search</button>
+                                <input class="search-input" name="search" type="text" placeholder="name">
+                                <button class="search-btn" type="submit">Search</button>
                             </div>
-                        </div>
+                        </form>
                         <table class="table devices-table" border="1">
                             <thead>
                                 <tr>
@@ -191,15 +192,24 @@
             $('.menu-btn').click(function () {
                 $('.navbar-left').css('left', '0');
                 $('.navbar-left').css('opacity', '1');
-                $('.menu-btn').hide()
-                $('.close-btn').show()
+                $('.menu-btn').hide();
+                $('.close-btn').show();
+
+                $('.navbar-left').click(function (event) {
+                    event.stopPropagation(); // Ngăn chặn sự kiện click lan toả lên các phần tử cha
+                });
+                
             });
             $('.close-btn').click(function () {
                 $('.navbar-left').css('left', '-245px');
                 $('.navbar-left').css('opacity', '0');
-                $('.menu-btn').show()
-                $('.close-btn').hide()
+                $('.menu-btn').show();
+                $('.close-btn').hide();
             })
+
+            $('.navbar-left').click(function (event) {
+                event.stopPropagation(); // Ngăn chặn sự kiện click lan toả lên các phần tử cha
+            });
         });
 
     </script>
